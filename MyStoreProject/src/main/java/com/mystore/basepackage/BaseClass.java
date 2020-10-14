@@ -15,7 +15,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.BeforeTest;
 
 import com.mystore.actiondriver.Action;
-import com.mystore.actiondriver.ActionList;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -24,16 +23,15 @@ public class BaseClass {
 	public static Properties prop;
 	public static WebDriver driver;
 
-	static ActionList act1 = new ActionList();
+	
+	//loadconfig method will read before the test runs and will load the configuration file 
+	//System.getProperty   ("user.dir") + 
 	@BeforeTest
-
 	public void LoadConfig() {
-
 		try {
 			prop = new Properties();
 			System.out.println("super constructor invoked");
-			FileInputStream ip= new FileInputStream(
-					System.getProperty("user.dir") + "C:\\Users\\jpereyra\\Desktop\\New Workspace\\MyStoreProject\\Configuration\\Config.properties");
+			FileInputStream ip= new FileInputStream("C:\\Users\\jpereyra\\git\\MyStoreProject\\MyStoreProject\\Configuration\\Config.properties");
 			prop.load(ip);
 			System.out.println("driver" + driver);
 		} catch (FileNotFoundException e) {
@@ -45,18 +43,22 @@ public class BaseClass {
 
 	}
 	public static void LaunchApp() {
-	
+	// we set up chrome driver using wbedriver manager to 
 		WebDriverManager.chromedriver().setup();
+		//getting browser from properties file - storing string in variable called Browsername
 		String browserName = prop.getProperty("browser");
 		
-		if (browserName.contains("Chrome")) {
+		if (browserName.equalsIgnoreCase("Chrome")) {
+			WebDriverManager.chromedriver().setup();
 			driver = new ChromeDriver();
-		} else if (browserName.contains("FireFox")) {
+		} else if (browserName.equalsIgnoreCase("FireFox")) {
+			WebDriverManager.firefoxdriver().setup();
 			driver = new FirefoxDriver();
-		} else if (browserName.contains("IE")) {	
+		} else if (browserName.equalsIgnoreCase("IE")) {	
+			WebDriverManager.iedriver().setup();
 			driver = new InternetExplorerDriver();
 		}
-		
+		driver.manage().window().maximize();
 		Action.implicitWait(driver, 10);
 		Action.pageLoadTimeOut(driver, 30);
 		driver.get(prop.getProperty("url"));
